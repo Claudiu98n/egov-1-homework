@@ -1,0 +1,18 @@
+{
+  "kind": "singleType",
+  "collectionName": "seats",
+  "info": {
+    "name": "seats"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "seatsJson": {
+      "type": "json"
+    }
+  }
+}

@@ -60,7 +60,6 @@ const SignIn = () => {
   
         if (signIn.status === 200) {
           cogoToast.success('Autentificare cu succes');
-          console.log(signIn);
           login(signIn.data.jwt);
           localStorage.setItem('user', JSON.stringify(signIn.data.user));
           history.push('/buy-tickets');

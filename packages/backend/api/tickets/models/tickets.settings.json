@@ -1,0 +1,42 @@
+{
+  "kind": "collectionType",
+  "collectionName": "tickets",
+  "info": {
+    "name": "tickets"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "firstName": {
+      "type": "string"
+    },
+    "lastName": {
+      "type": "string"
+    },
+    "address": {
+      "type": "string"
+    },
+    "localitate": {
+      "type": "string"
+    },
+    "judet": {
+      "type": "string"
+    },
+    "zip": {
+      "type": "string"
+    },
+    "chosenSeat": {
+      "type": "string"
+    },
+    "ticketType": {
+      "type": "string"
+    },
+    "totalPrice": {
+      "type": "integer"
+    }
+  }
+}

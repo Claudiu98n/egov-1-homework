@@ -14,14 +14,15 @@ import {createTheme, ThemeProvider} from '@mui/material/styles';
 import AddressForm from './steps/AddressForm';
 import PaymentForm from './steps/PaymentForm';
 import Review from './steps/Review';
+import axios from 'axios';
 import {
   useOrderInfoContext,
-  useUserInfoContext,
+  useTotalPrice,
   usePaymentInfoContext,
 } from '../../context/UserProvider';
 import cogoToast from 'cogo-toast';
 
-const steps = ['Alege biletul', 'Detalii de plata', 'Rezumatul comenzii'];
+const steps = ['Alege biletul', 'Detalii de plata'];
 
 const getStepContent = step => {
   switch (step) {
@@ -29,8 +30,6 @@ const getStepContent = step => {
       return <AddressForm />;
     case 1:
       return <PaymentForm />;
-    case 2:
-      return <Review />;
     default:
       throw new Error ('Unknown step');
   }
@@ -42,11 +41,9 @@ const BuyTickets = () => {
   const [activeStep, setActiveStep] = useState (0);
   const [addressState, setAddressState] = useOrderInfoContext ();
   const [paymentState, setPaymentState] = usePaymentInfoContext ();
-  const userInfo = useUserInfoContext ();
+  const [totalPrice, setTotalPrice] = useTotalPrice();
 
-  console.log (paymentState);
-
-  const handleNext = () => {
+  const handleNext = async () => {
     if (activeStep === 0) {
       if (
         addressState.fullName === '' ||
@@ -54,7 +51,9 @@ const BuyTickets = () => {
         addressState.address === '' ||
         addressState.judet === '' ||
         addressState.localitate === '' ||
-        addressState.zip === ''
+        addressState.zip === '' ||
+        addressState.chosenSeat === '' ||
+        addressState.ticketType === ''
       ) {
         return cogoToast.error ('Toate campurile sunt obligatorii');
       } else {
@@ -62,6 +61,8 @@ const BuyTickets = () => {
           ...paymentState,
           cardHolder: addressState.lastName + ' ' + addressState.firstName,
         });
+
+        setActiveStep (activeStep + 1);
       }
     } else if (activeStep === 1) {
       if (
@@ -74,10 +75,31 @@ const BuyTickets = () => {
         return cogoToast.error ('Toate campurile sunt obligatorii');
       } else if (paymentState.cvv.length !== 3) {
         return cogoToast.error ('CVV trebuie sa aiba 3 cifre');
+      } else {
+        try {
+          const confirmPayment = await axios.post (
+            'http://localhost:1337/confirmPayment',
+            {
+              addressState,
+              paymentState,
+              totalPrice
+            },
+            {
+              headers: {
+                Authorization: 'Bearer ' + localStorage.getItem ('jwt'),
+              },
+            }
+          );
+
+          if (confirmPayment.status === 200) {
+            setActiveStep (activeStep + 1);
+          } 
+        } catch (e) {
+          console.log (e);
+        }
       }
     }
 
-    setActiveStep (activeStep + 1);
   };
 
   const handleBack = () => {
@@ -121,8 +143,7 @@ const BuyTickets = () => {
                     Biletul tau a fost rezervat cu succes.
                   </Typography>
                   <Typography variant="subtitle1">
-                    Numarul comenzii tale este #2001539. V-am trimis pe email confrimarea comenzii,
-                    alaturi de PDF SI XML generate.
+                    Comanda a fost confirmata iar PDF si XML generate si salvate in baza de date.
                   </Typography>
                 </React.Fragment>
               : <React.Fragment>

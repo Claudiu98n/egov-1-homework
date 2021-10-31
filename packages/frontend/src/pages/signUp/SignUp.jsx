@@ -59,7 +59,6 @@ const SignUp = () => {
   }
 
   const validateFirstName = (firstName) => {
-    console.log(firstName)
     let validated;
     if (firstName.length > 3) {
       validated = true;

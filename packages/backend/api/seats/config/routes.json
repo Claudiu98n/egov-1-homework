@@ -1,0 +1,28 @@
+{
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/seats",
+      "handler": "seats.find",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/seats",
+      "handler": "seats.update",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/seats",
+      "handler": "seats.delete",
+      "config": {
+        "policies": []
+      }
+    }
+  ]
+}

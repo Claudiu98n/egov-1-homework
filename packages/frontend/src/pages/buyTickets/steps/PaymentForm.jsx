@@ -81,6 +81,7 @@ const PaymentForm = () => {
             required
             id="cardNumber"
             name="cardNumber"
+            type="number"
             label="Numarul cardului"
             fullWidth
             onBlur={handleBlur}
@@ -99,7 +100,7 @@ const PaymentForm = () => {
               value={paymentState.expDate}
               onChange={handleExpDateChange}
               renderInput={params => <TextField {...params} />}
-              inputFormat="mm/yyyy"
+              inputFormat="MM/yyyy"
             />
           </LocalizationProvider>
         </Grid>

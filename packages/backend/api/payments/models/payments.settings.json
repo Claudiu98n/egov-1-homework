@@ -1,0 +1,27 @@
+{
+  "kind": "collectionType",
+  "collectionName": "payments",
+  "info": {
+    "name": "payments"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "cardHolder": {
+      "type": "string"
+    },
+    "cardNumber": {
+      "type": "biginteger"
+    },
+    "cardType": {
+      "type": "string"
+    },
+    "expDate": {
+      "type": "date"
+    }
+  }
+}

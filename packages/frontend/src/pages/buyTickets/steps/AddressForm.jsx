@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
@@ -9,9 +9,14 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import judete from '../../../utils/judete.json';
 import {useOrderInfoContext} from '../../../context/UserProvider';
+import TicketModal from './TicketModal';
 
 const AddressForm = () => {
-  const [addressState, setAddressState] = useOrderInfoContext();
+  const [addressState, setAddressState] = useOrderInfoContext ();
+  const [open, setOpen] = useState (false);
+
+  const handleOpen = () => setOpen (true);
+  const handleClose = () => setOpen (false);
 
   const handleChange = event => {
     setAddressState ({
@@ -53,9 +58,22 @@ const AddressForm = () => {
           />
         </Grid>
         <Grid item xs={12}>
-          <Button variant="outlined" sx={{width: '100%'}}>
+          <Button variant="outlined" onClick={handleOpen} sx={{width: '100%'}}>
             Alegeti locul
           </Button>
+        </Grid>
+        <Grid item xs={12}>
+          <TextField
+            required
+            id="seat"
+            name="seat"
+            label="Loc"
+            value={addressState.chosenSeat}
+            fullWidth
+            readOnly
+            autoComplete="seat"
+            variant="standard"
+          />
         </Grid>
         <Grid item xs={12}>
           <TextField
@@ -102,8 +120,8 @@ const AddressForm = () => {
             >
               {addressState.judet
                 ? judete.judete
-                    .filter (judet => judet.auto === addressState.judet)[0].localitati
-                    .map ((localitate, index) => (
+                    .filter (judet => judet.auto === addressState.judet)[0]
+                    .localitati.map ((localitate, index) => (
                       <MenuItem key={index} value={localitate.nume}>
                         {localitate.nume}
                       </MenuItem>
@@ -129,6 +147,7 @@ const AddressForm = () => {
           />
         </Grid>
       </Grid>
+      <TicketModal open={open} handleClose={handleClose} />
     </React.Fragment>
   );
 };
