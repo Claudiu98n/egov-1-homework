@@ -22,6 +22,11 @@
     },
     "expDate": {
       "type": "date"
+    },
+    "user": {
+      "via": "payments",
+      "plugin": "users-permissions",
+      "model": "user"
     }
   }
 }

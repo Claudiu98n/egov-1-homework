@@ -64,6 +64,14 @@
     },
     "lastName": {
       "type": "string"
+    },
+    "payments": {
+      "collection": "payments",
+      "via": "user"
+    },
+    "tickets": {
+      "collection": "tickets",
+      "via": "user"
     }
   }
 }

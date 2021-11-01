@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useRef} from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -10,10 +10,10 @@ import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
+import Divider from '@mui/material/Divider';
 import {createTheme, ThemeProvider} from '@mui/material/styles';
 import AddressForm from './steps/AddressForm';
 import PaymentForm from './steps/PaymentForm';
-import Review from './steps/Review';
 import axios from 'axios';
 import {
   useOrderInfoContext,
@@ -21,6 +21,8 @@ import {
   usePaymentInfoContext,
 } from '../../context/UserProvider';
 import cogoToast from 'cogo-toast';
+import Pdf from 'react-to-pdf';
+import './BuyTickets.css';
 
 const steps = ['Alege biletul', 'Detalii de plata'];
 
@@ -41,7 +43,9 @@ const BuyTickets = () => {
   const [activeStep, setActiveStep] = useState (0);
   const [addressState, setAddressState] = useOrderInfoContext ();
   const [paymentState, setPaymentState] = usePaymentInfoContext ();
-  const [totalPrice, setTotalPrice] = useTotalPrice();
+  const [totalPrice, setTotalPrice] = useTotalPrice ();
+
+  const ref = useRef ();
 
   const handleNext = async () => {
     if (activeStep === 0) {
@@ -82,7 +86,7 @@ const BuyTickets = () => {
             {
               addressState,
               paymentState,
-              totalPrice
+              totalPrice,
             },
             {
               headers: {
@@ -93,13 +97,12 @@ const BuyTickets = () => {
 
           if (confirmPayment.status === 200) {
             setActiveStep (activeStep + 1);
-          } 
+          }
         } catch (e) {
           console.log (e);
         }
       }
     }
-
   };
 
   const handleBack = () => {
@@ -143,8 +146,83 @@ const BuyTickets = () => {
                     Biletul tau a fost rezervat cu succes.
                   </Typography>
                   <Typography variant="subtitle1">
-                    Comanda a fost confirmata iar PDF si XML generate si salvate in baza de date.
+                    Comanda a fost confirmata, PDF-ul generat iar XML generat si salvate in baza de date.
                   </Typography>
+                  <Paper sx={{mb: 3, p: 4}} id="pdf-show" ref={ref}>
+                    <div className="row">
+                      <Typography fontWeight="bold">
+                        Detinatorul cardului:
+                      </Typography>
+                      <Typography mb={1}>{paymentState.cardHolder}</Typography>
+                    </div>
+                    <div className="row">
+                      <Typography fontWeight="bold">
+                        Numarul cardului:
+                      </Typography>
+                      <Typography mb={1}>{paymentState.cardNumber}</Typography>
+                    </div>
+                    <div className="row">
+                      <Typography fontWeight="bold">
+                        Data de expirare a cardului:
+                      </Typography>
+                      <Typography mb={1}>
+                        {
+                          new Date (paymentState.expDate)
+                            .toISOString ()
+                            .split ('T')[0]
+                        }
+                      </Typography>
+                    </div>
+                    <div className="row">
+                      <Typography fontWeight="bold">Tipul cardului:</Typography>
+                      <Typography mb={1}>{paymentState.cardType}</Typography>
+                    </div>
+                    <div className="row">
+                      <Typography fontWeight="bold">Localitate:</Typography>
+                      <Typography mb={1}>{addressState.localitate}</Typography>
+                    </div>
+                    <div className="row">
+                      <Typography fontWeight="bold">Judet:</Typography>
+                      <Typography mb={1}>{addressState.judet}</Typography>
+                    </div>
+                    <div className="row">
+                      <Typography fontWeight="bold">
+                        Adresa de resedinta:
+                      </Typography>
+                      <Typography mb={1}>{addressState.address}</Typography>
+                    </div>
+                    <Divider sx={{borderWidth: '1px'}} />
+                    <div className="row">
+                      <Typography fontWeight="bold" mt={1}>
+                        Total de plata:
+                      </Typography>
+                      <Typography>{totalPrice} LEI</Typography>
+                    </div>
+                    <div className="row">
+                      <Typography fontWeight="bold" mt={1}>
+                        Tip bilet:
+                      </Typography>
+                      <Typography>{addressState.ticketType}</Typography>
+                    </div>
+                    <div className="row">
+                      <Typography fontWeight="bold" mt={1}>Loc:</Typography>
+                      <Typography>
+                        Locul
+                        {' '}
+                        {addressState.chosenSeat.split ('-')[0]}
+                        ,
+                        {' '}
+                        {addressState.chosenSeat.split ('-')[1]}
+                      </Typography>
+                    </div>
+                  </Paper>
+                  <Pdf targetRef={ref} filename="Confirmare-bilet-derby.pdf">
+                    {({toPdf}) => (
+                      <Button variant="contained" onClick={toPdf}>
+                        Descarcă PDF
+                      </Button>
+                    )}
+                  </Pdf>
                 </React.Fragment>
               : <React.Fragment>
                   {getStepContent (activeStep)}
@@ -153,7 +231,6 @@ const BuyTickets = () => {
                       <Button onClick={handleBack} sx={{mt: 3, ml: 1}}>
                         Inapoi
                       </Button>}
-
                     <Button
                       variant="contained"
                       onClick={handleNext}

@@ -37,6 +37,11 @@
     },
     "totalPrice": {
       "type": "integer"
+    },
+    "user": {
+      "via": "tickets",
+      "plugin": "users-permissions",
+      "model": "user"
     }
   }
 }
